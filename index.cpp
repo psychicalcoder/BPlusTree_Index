@@ -32,10 +32,12 @@ Node::Node(int keys_size) {
   is_leaf = false;
 }
 
+int cnt = 0;
+
 Node::~Node() {
   if (is_leaf)
     delete[] vals;
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i <= size; i++)
     delete children[i];
   delete[] children;
   delete[] keys;
@@ -153,7 +155,9 @@ BPTree::BPTree(int horder) {
   root = create_tree();
 }
 
-BPTree::~BPTree() { delete root; }
+BPTree::~BPTree() {
+  delete root;
+}
 
 int BPTree::search(int key) {
   Node *y = this->root;
@@ -191,7 +195,7 @@ int BPTree::rmq(int left, int right) {
 }
 
 Index::Index(int num_rows, vector<int> &keys, vector<int> &vals) {
-  int order = std::min(16, int(std::pow(double(num_rows), 0.333) + 0.5));
+  int order = std::max(16, int(std::pow(double(num_rows), 0.333) + 0.5));
   this->bptree = new BPTree(order>>1);
   vector<int>::iterator k = keys.begin();
   vector<int>::iterator v = vals.begin();
@@ -203,7 +207,7 @@ Index::Index(int num_rows, vector<int> &keys, vector<int> &vals) {
 
 void Index::key_query(vector<int> &querys) {
   std::fstream outfile;
-  outfile.open("key_query_ans2.txt", std::ios_base::out);
+  outfile.open("key_query_out.txt", std::ios_base::out);
   if (outfile.is_open()) {
     for (int qs: querys) {
       outfile << this->bptree->search(qs) << '\n';
@@ -215,7 +219,7 @@ void Index::key_query(vector<int> &querys) {
 
 void Index::range_query(vector<pair<int, int>> &querys) {
   std::fstream outfile;
-  outfile.open("range_query_ans2.txt", std::ios_base::out);
+  outfile.open("range_query_out.txt", std::ios_base::out);
   if (outfile.is_open()) {
     for (pair<int, int> qs: querys) {
       outfile << this->bptree->rmq(qs.first, qs.second) << '\n';
